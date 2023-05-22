@@ -33,7 +33,7 @@ production_areas = ['A - DJ_Summer_2021Denver basin_production',
 # 'Kairos BarnettFort Worth basin_production'
 
 
-Data_set = production_areas[-2]
+Data_set = production_areas[-1]
 
 for file_ in onlyfiles:
     #
@@ -53,8 +53,8 @@ file_a = pd.read_csv(mypath+'/'+permian_files[1])
 # file_a.hist(0)
 
 # file_a.hist('Log emission magnitude Rutherford [kgh]')
-# model_ = 'Emission magnitude [kgh]'
-model_ = 'Log emission magnitude Rutherford [kgh]'
+model_ = 'Emission magnitude [kgh]'
+# model_ = 'Log emission magnitude Rutherford [kgh]'
 # file_a.hist('Emission magnitude [kgh]')
 mean_value = file_a.loc[:, model_].mean()
 
@@ -65,21 +65,35 @@ column = model_
 n_bootstrap = 1000
 n_samples_max = 4000
 step = 50
+
 means = np.zeros((n_samples_max//step, n_bootstrap))
 mdl_array_measured = np.zeros((n_samples_max//step, n_bootstrap))
 mdl_array_unmeasured = np.zeros((n_samples_max//step, n_bootstrap))
 total_emissions_bootstap = np.zeros((n_samples_max//step, n_bootstrap))
+
 n_samples_range = np.arange(n_samples_max-1,step=step)+1
 j = 0
 mdl = 1
+
 for n_samples in n_samples_range:#range(1, n_samples_max+1, 10):#n_samples_range[3122:]:
     for i in range(n_bootstrap):
+        #
         bootstrap_samples = file_a.loc[:, column].sample(n=n_samples).to_numpy()
-        mdl_mask = bootstrap_samples>mdl
-        mdl_array_measured[j, i] = np.sum(10**bootstrap_samples[mdl_mask])
-        mdl_array_unmeasured[j, i] = np.sum(10**bootstrap_samples[~mdl_mask])
-        total_emissions_bootstap[j, i] = np.sum(10**bootstrap_samples)
+        
+        #
+        if model_ == 'Log emission magnitude Rutherford [kgh]':
+            mdl_mask = bootstrap_samples>np.log10(mdl)
+            mdl_array_measured[j, i] = np.sum(10**bootstrap_samples[mdl_mask])
+            mdl_array_unmeasured[j, i] = np.sum(10**bootstrap_samples[~mdl_mask])
+            total_emissions_bootstap[j, i] = np.sum(10**bootstrap_samples)
+        elif model_ == 'Emission magnitude [kgh]':
+            mdl_mask = bootstrap_samples>mdl
+            mdl_array_measured[j, i] = np.sum(bootstrap_samples[mdl_mask])
+            mdl_array_unmeasured[j, i] = np.sum(bootstrap_samples[~mdl_mask])
+            total_emissions_bootstap[j, i] = np.sum(bootstrap_samples)
+        #
         means[j, i] = np.mean(bootstrap_samples)
+        
     j += 1
 #%%    
 
@@ -109,7 +123,7 @@ ax0.plot(n_samples_range,percent_unmeasured)
 
 fig, ax0 = plt.subplots(1, 1,figsize=(20, 2.7*4))
 # ax0.plot(n_samples_range,mdl_array_measured)
-ax0.set_title('Percentage of emissions measured', fontsize=16)
+ax0.set_title(f'Percentage of total emissions Measurable based on a MDL of {mdl} kg/hr', fontsize=16)
 ax0.fill_between(n_samples_range,
                  np.amin(percent_measured,axis=1),
                  np.amax(percent_measured,axis=1),
