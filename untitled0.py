@@ -33,7 +33,7 @@ production_areas = ['A - DJ_Summer_2021Denver basin_production',
 # 'Kairos BarnettFort Worth basin_production'
 
 
-Data_set = production_areas[-1]
+Data_set = production_areas[-2]
 
 for file_ in onlyfiles:
     #
@@ -107,12 +107,49 @@ for n_samples in n_samples_range:#range(1, n_samples_max+1, 10):#n_samples_range
 percent_measured = -(mdl_array_measured - total_emissions_bootstap)/total_emissions_bootstap*100
 percent_unmeasured = -(mdl_array_measured - total_emissions_bootstap)/total_emissions_bootstap*100
 
+#%%
+
+fig, ax0 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+
+ax0.boxplot(means[0::2].transpose(),labels=n_samples_range[0::2])
+
+ax0.set_ylim(None,20)
+ax0.set_title(f'Box plots of mean emission rates for number of sites sampled from from {Data_set}', fontsize=16)
+ax0.set_ylabel('Site Emissions [kg/hr]')
+ax0.set_xlabel('number of sites')
+
+fig, ax1 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+ax1.fill_between(n_samples_range,
+                 np.amin(means,axis=1),
+                 np.amax(means,axis=1),
+                 alpha = 0.75,
+                 label='min value to max value')
+ax1.fill_between(n_samples_range,
+                 np.percentile(means,[5],axis=1).flatten(),
+                 np.percentile(means,[95],axis=1).flatten(),
+                 alpha=0.75,
+                 label='5th -95th percentile')
+ax1.fill_between(n_samples_range,
+                 np.percentile(means,[25],axis=1).flatten(),
+                 np.percentile(means,[75],axis=1).flatten(),
+                 alpha=0.75,
+                 label='25th -75th percentile')
+ax1.set_ylabel('Site Emissions [kg/hr]')
+ax1.set_xlabel('number of sites')
+# ax1.boxplot(means[0::2].transpose(),labels=n_samples_range[0::2])
+ax1.set_ylim(None,50)
+ax1.set_title(f'Box plots of mean emission rates for number of sites sampled from from {Data_set}', fontsize=16)
+ax1.legend(loc='upper right')
+
+
+
+
 
 
 
 #%%
-fig, ax0 = plt.subplots(1, 1,figsize=(20, 2.7*4))
-ax0.plot(n_samples_range,percent_unmeasured)
+# fig, ax0 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+# ax0.plot(n_samples_range,percent_unmeasured)
 # ax0.set_yscale('symlog')
 
 
@@ -152,6 +189,8 @@ ax0.legend(loc='upper right')
 
 Mean_of_means = np.mean(means[:n_samples//step],axis=1)
 p_dev_mean = (means[:n_samples//step] - np.expand_dims(Mean_of_means,axis=1))*np.expand_dims(Mean_of_means,axis=1)*100
+
+
 # p_dev_mean = (means[:n_samples//step] -mean_value)*mean_value*100
 
 percentile_list = [5, 25, 75, 95]
