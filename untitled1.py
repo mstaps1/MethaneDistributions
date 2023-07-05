@@ -62,11 +62,14 @@ total_emissions_bootstap = np.zeros((n_samples_max//step, n_bootstrap))
 # mdl_array_unmeasured = np.zeros((n_samples_max//step, n_bootstrap))
 
 
-n_samples_range = np.arange(n_samples_max-1,step=step)+1
+n_samples_range = np.arange(50,n_samples_max-1,step=step)+1
 j = 0
 
+mean_original_dist = file_a.loc[:, column].mean()
 
 mdl = 10
+
+
 
 for n_samples in n_samples_range:#range(1, n_samples_max+1, 10):#n_samples_range[3122:]:
     for i in range(n_bootstrap):
@@ -253,6 +256,10 @@ if model_ == 'Emission magnitude [kgh]':
     
     
 else:
+    
+    Mean_of_means = np.mean(10**means[:n_samples//step],axis=1)
+    p_dev_mean = (10**means[:n_samples//step] - np.expand_dims(10**Mean_of_means,axis=1))*np.expand_dims(10**Mean_of_means,axis=1)*100
+    
     x = file_a.loc[:, model_].to_numpy()
     fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(20, 2.7*4))
     
@@ -263,12 +270,48 @@ else:
     ax1.set_ylabel('number of sites')
     # ax1.set_ylim([None, 5*10**4])
     ax1.set_title(f'Histogram of emission rates for {basin}', fontsize=16)
-    ax2.fill_between(n_samples_range[:-1], np.amin(p_dev_mean,axis=1), np.amax(p_dev_mean,axis=1),alpha = 0.5, label='min value to max value')
+    ax2.fill_between(n_samples_range[:-1], np.percentile(p_dev_mean,[5],axis=1).flatten(), np.percentile(p_dev_mean,[95],axis=1).flatten(),alpha=0.2,label='5th -95th percentile')
+    ax2.fill_between(n_samples_range[:-1], np.percentile(p_dev_mean,[25],axis=1).flatten(), np.percentile(p_dev_mean,[75],axis=1).flatten(),alpha=0.4,label='25th -75th percentile')
+    ax2.set_ylim([-5, 5])
+    # ax2.fill_between(n_samples_range[:-1], np.amin(p_dev_mean,axis=1), np.amax(p_dev_mean,axis=1),alpha = 0.5, label='min value to max value')
+#%%
+#******************************************************************************
+# Percent Deviation from the mean
+#******************************************************************************
+
+fig, ax2 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+ax2.boxplot(p_dev_mean[0::4].transpose(),labels=n_samples_range[:-1][0::4],whis=(5,95))
+ax2.set_ylabel('Percent Deviation from Mean')
+ax2.set_xlabel('number of sites sampled')
+ax2.set_yscale('symlog')
+ax2.set_title(f'Box plot of % deviation from mean site emissions for the {basin}', fontsize=16)
 
 
 
 
+#%%
+#******************************************************************************
+# Percent Deviation from the mean
+#******************************************************************************
 
+# percent_measured_error = -(mdl_array_measured - total_emissions_bootstap)/total_emissions_bootstap*100
+# percent_unmeasured = -(mdl_array_measured - total_emissions_bootstap)/total_emissions_bootstap*100
+
+fig, ax0 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+for i, mdl in enumerate(mdl_list):
+    ax0.boxplot(percent_measured[:,:,i][0::4].transpose(), labels=n_samples_range[:-1][0::4])
+    #(n_samples_range, np.mean(percent_measured[:,:,i],axis=1),label=f'MDL {mdl} [kg/hr]')
+    # ax3.plot(n_samples_range, np.mean(percent_measured[:,:,i],axis=1),c='k')
+    # ax3.fill_between(n_samples_range,
+    #                   np.percentile(percent_measured[:,:,i],[5],axis=1).flatten(),
+    #                   np.percentile(percent_measured[:,:,i],[95],axis=1).flatten(),
+    #                   alpha=0.15,
+    #                   label='5th -95th percentile')
+    # ax3.boxplot(percent_measured[:,:,i].transpose(),labels=f'MDL {mdl} [kg/hr]')
+# ax0.legend(loc='upper right')
+ax0.set_ylabel('Percentage of sites that are measureable for given MDL')
+ax0.set_xlabel('Number of sites')
+ax0.set_title(f'Mean percentage of total emissions Measurable for {basin}', fontsize=16)
 
 
 
@@ -280,11 +323,29 @@ else:
 
 
 
+#%%
+#******************************************************************************
+# Percent Deviation from the mean
+#******************************************************************************
+fig, ax0 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+i = 2
+ax0.boxplot(percent_measured[:,:,i][0::4].transpose(), labels=n_samples_range[:-1][0::4])
+ax0.set_ylabel('Percentage of sites that are measureable for given MDL')
+ax0.set_xlabel('Number of sites')
+mdl = mdl_list[i]
+ax0.set_title(f'Percentage of total emissions that are measurable for {basin} and MDL of {mdl} kg/hr', fontsize=16)
+ax2.set_ylim([0, 100])
+#%%
+#******************************************************************************
+# Percent Deviation from the mean
+#******************************************************************************
 
-
-
-
-
+fig, ax2 = plt.subplots(1, 1,figsize=(20, 2.7*4))
+ax2.boxplot(percent_dev[0::4].transpose(),labels=m_samples_list[:-1][0::4],whis=(5,95))
+ax2.set_ylabel('Percent Deviation from mean')
+ax2.set_xlabel('number of sites sampled')
+# ax2.set_yscale('symlog')
+ax2.set_title(f'Box plot of % deviation from log(mean) site emissions for the {basin}', fontsize=16)
 
 
 
