@@ -144,7 +144,7 @@ for i_sample, num_samples in enumerate(samples_per_year):
         mean_emission_samples[i_sample, sample] =  np.mean(each_sources_emissions[MDL])
         
         # use ddof=1 for sample variance
-        # sample_var_emissions[i_sample, sample] = np.sqrt( np.var(each_sources_emissions, ddof=1)/n_sites )
+        sample_var_emissions[i_sample, sample] = np.sqrt( np.var(each_sources_emissions, ddof=1)/(n_sites*num_samples) )
 
 # 
 measured_total_annual_emissions = mean_emission_samples*hours_per_year*n_sites/total_emissions_year
@@ -190,7 +190,7 @@ ax0.fill_between(samples_per_year, _05_percentile_var, _95_percentile_var, alpha
 ax0.plot(samples_per_year, mean_over_bootstraps_var)
 
 ax0.set_xlabel('Number of complete campaigns per year')
-ax0.set_ylabel('Variance in site level emission rates')
+ax0.set_ylabel('Variance in site level emission rates [kg/h]')
 
 ax0.legend(loc='lower right')  
 #%%
