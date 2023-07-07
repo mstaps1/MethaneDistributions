@@ -80,7 +80,7 @@ Sample
 """
 
 for day in range(num_EED_year):
-    each_sources_emissions = file_a.loc[:, column].sample(n=n_sites).to_numpy()
+    each_sources_emissions = file_a.loc[:, column].sample(n=n_sites,replace=True).to_numpy()
     total_emissions_for_time_period[day] = np.sum(each_sources_emissions)
 
 total_emissions_year = np.sum(total_emissions_for_time_period*24)
@@ -100,7 +100,7 @@ for num_samples in samples_per_year:
     
     #
     for sample in range(num_monte_samples):
-        each_sources_emissions = file_a.loc[:, column].sample(n=n_sites).to_numpy()
+        each_sources_emissions = file_a.loc[:, column].sample(n=n_sites,replace=True).to_numpy()
         
         standard_error = np.sqrt( np.var(each_sources_emissions, ddof=1)/n_sites )
         

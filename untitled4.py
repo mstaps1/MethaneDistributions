@@ -55,7 +55,7 @@ hours_per_year = 365*24
 
 # Generate the hypothetical population of emission rates
 for day in range(num_EED_year):
-    each_sources_emissions = file_a.loc[:, column].sample(n=n_sites).to_numpy()
+    each_sources_emissions = file_a.loc[:, column].sample(n=n_sites,replace=True).to_numpy()
     total_emissions_for_time_period[day] = np.sum(each_sources_emissions)
 
 
@@ -74,7 +74,6 @@ list_of_stats = ['mean','median','standard deviation',]
 
 
 mean_emission_samples = np.zeros((len(samples_per_year)+1, num_monte_samples))
-media
 sample_var_emissions = np.zeros((len(samples_per_year), num_monte_samples))
 # taking 12 samples per year
 MDL = 1 #kg/hr
