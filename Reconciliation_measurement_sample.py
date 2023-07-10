@@ -99,7 +99,7 @@ for site_type in site_types:
 #%%
 
 #
-
+import pprint
 
 # merge all of the site emissions together
 all_emissions_sampled_MDL = np.array(site_emissions_sampled_MDL).flatten()
@@ -109,9 +109,10 @@ campaign_stats['median'] = np.mean(all_emissions_sampled_MDL)
 campaign_stats['variance'] = np.mean(all_emissions_sampled_MDL)
 campaign_stats['max release rate'] = np.amax(all_emissions_sampled_MDL)
 campaign_stats['min release rate'] = np.amin(all_emissions_sampled_MDL)
-
-print('Site type stats: ',site_type_statistics)   
-print('Measurement campaign stats: ',site_type_statistics)   
+print('Site type stats: \n', )
+pprint.pprint(site_type_statistics)   
+print('Measurement campaign stats: \n')
+pprint.pprint(site_type_statistics)   
     
     
     
