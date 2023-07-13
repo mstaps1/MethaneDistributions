@@ -10,35 +10,12 @@ from os.path import isfile, join
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+from utils import data_loader
 #
-mypath = 'CDF_data'
-onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-permian_files = []
+basin, year = 'Permian', '2021'
+file_a, file = data_loader(basin, year)
+print(file)
 
-production_areas = ['A - DJ_Summer_2021Denver basin_production',
-                    'B - NorthEast_2021Appalachian basin (eastern overthrust area)_production',
-                    'CA 2016San Joaquin basin_production',
-                    'Delaware_2019_F2021_boundsPermian basin_production',
-                    'Permian_2021Permian basin_production',
-                    'F - GAO_2020Permian basin_production',
-                    'G - CA_2020San Joaquin basin_production',
-                    'H - COVID_CA_2020San Joaquin basin_production',
-                    'I - DJ Fall 2021Denver basin_production',
-                    'J - Permian Fall 2021Permian basin_production',
-                    'F - GAO_2020Uinta basin_production']
-
-# Select the permian basin as the data set.
-Data_set = production_areas[-2]
-basin = 'Permian basin 2021'
-for file_ in onlyfiles:
-    #
-    if Data_set in file_:
-        #
-        permian_files.append(file_)
-# Now import the file into pandas
-file_a = pd.read_csv(mypath+'/'+permian_files[1])
-# Select the column for data in this case choose the 'Emission magnitude [kgh]'
 model_ = 'Emission magnitude [kgh]'
 mean_value_A = file_a.loc[:, model_].mean()
 column = model_
