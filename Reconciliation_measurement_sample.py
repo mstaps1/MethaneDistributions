@@ -58,9 +58,9 @@ site_type_statistics = {0:dict(),
                          2:dict()}
 for site_type in site_types:
     # Sample the emission rates
-    all_emission_rates_single_site = file_a.loc[:, column].sample(n=n_samples[site_type], replace=True).to_numpy()
+    all_emission_rates_single_site = file_a.loc[:, column].sample(n=n_sites[site_type], replace=True).to_numpy()
     # bias the results based on site type and add measurement error
-    site_emissions_with_error = all_emission_rates_single_site*(1+rng.normal(mu[site_type], sigma[site_type], n_samples[site_type]))
+    site_emissions_with_error = all_emission_rates_single_site*(1+rng.normal(mu[site_type], sigma[site_type], n_sites[site_type]))
     site_emissions_all.append(site_emissions_with_error)
     
     # Sample 
@@ -89,8 +89,24 @@ campaign_stats['min release rate'] = np.amin(all_emissions_sampled_MDL)
 print('Site type stats: \n', )
 pprint.pprint(site_type_statistics)   
 print('Measurement campaign stats: \n')
-pprint.pprint(site_type_statistics)   
-    
+pprint.pprint(site_type_statistics)
+#
+#%%
+bins = np.arange(-0.1,3.2,0.1)
+x = all_emissions_sampled_MDL
+# Get bin centers
+x_in = np.hstack((np.log10(x[x.astype(bool)]).reshape(-1),x[~x.astype(bool)]))
+# y, x = np.histogram(np.log10(x[np.nonzero(x)]), bins='auto', density=True)
+y, x = np.histogram(x_in, bins=bins, density=False)
+x = x[:-1] + (x[1] - x[0])/2
+bar_width = 0.133
+fig, a0 = plt.subplots(1, 1,figsize=(15,9))
+a0.bar(x,y/np.sum(y),bar_width,alpha=1)
+a0.set_xlabel('10^x Site Emissions [kg/hr]', fontsize=24)
+a0.set_ylabel('Probability', fontsize=24)
+# a0.set_yscale('log')
+a0.tick_params(axis='both', labelsize=18)
+
     
     
     

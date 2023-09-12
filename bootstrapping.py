@@ -180,10 +180,12 @@ ax0.fill_between(m_samples_list, _25_percentile_mean,_75_percentile_mean,alpha =
 ax0.set_xlabel('number of sites sampled')
 ax0.set_ylabel('Mean Emissions [log(kg/hr)]')
 ax0.legend(loc='upper right')
+
 #%%
 fig, ax0 = plt.subplots(1, 1,figsize=(15,20*4/3))
 bar_width =  0.133
 ax0.bar(store_log_means,bar_width,alpha=0.5)
+
 #%%
 fig, ax0 = plt.subplots(1, 1,figsize=(15,20*4/3))
 
